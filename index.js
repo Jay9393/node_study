@@ -1,13 +1,34 @@
-const express = require('express')
-const app = express()
-const port = 5000
+const express = require('express');
+const app = express();
+const port = 5000;
+const bodyParser = require('body-parser');
 
-const mongoose = require('mongoose')
-mongoose.connect('mongodb+srv://Jay:1234qwer@study.p7x2i.mongodb.net/?retryWrites=true&w=majority', {
-  useNewUrlParser: true, useUnifiedTopology: true
+const config = require('./config/key')
+
+const { User } = require("./models/User");
+
+//application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true }));
+
+//application/json
+app.use(bodyParser.json());
+
+const mongoose = require('mongoose');
+mongoose.connect(config.mongoURI, {
+    useNewUrlParser: true, useUnifiedTopology: true
 }).then(() => console.log('MongoDB Connected...'))
   .catch(err => console.log(err))
 
-app.get('/', (req, res) => res.send('Hello World!'))
+app.get('/', (req, res) => res.send('Hello World==========='))
+
+app.post('/register', (req, res) => {
+    const user = new User(req.body)
+    user.save((err, doc) => {
+        if(err) return res.json({ success: false, err })
+        return res.status(200).json({
+            success: true
+        })
+    })
+})
 
 app.listen(port, () => console.log('example app listening on port ${port}!'))
