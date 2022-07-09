@@ -31,4 +31,22 @@ app.post('/register', (req, res) => {
     })
 })
 
+app.post('/login', (req, res) => {
+    User.findOne({ email: req.body.email }, (err, user) => {
+        if(!user) {
+            return res.json({
+                loginSuccess: false,
+                message: "Couldn’t find a account associated with this email. Please try again."
+            })
+        }
+
+        user.comparePassword(req.body.password , (err, isMatch) => {
+            if(!isMatch)
+                return res.json({ loginSuccess: false, message: "That’s not the right password." })
+
+        })
+    })
+
+})
+
 app.listen(port, () => console.log('example app listening on port ${port}!'))
