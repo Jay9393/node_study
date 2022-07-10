@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const port = 5000;
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser')
 
 const config = require('./config/key')
 
@@ -44,6 +45,13 @@ app.post('/login', (req, res) => {
             if(!isMatch)
                 return res.json({ loginSuccess: false, message: "That’s not the right password." })
 
+            user.generateToken((err, user) => {
+                if(err) return res.status(400).send(err);
+
+                    res.cookie("x_auth", user.token)
+                    .status(200)
+                    .json({ loginSuccess: true, userId: user._id })
+            })
         })
     })
 

@@ -60,7 +60,16 @@ userSchema.methods.comparePassword = function(plainPassword, cb) {
 }
 
 userSchema.methods.generateToken = function(cb) {
-    jwt.sign(user._id)
+
+    var user = this;
+
+    var token = jwt.sign(user._id.toHexString(), 'secretToken')
+
+    user.token = token
+    user.save(function(err, user) {
+        if(err) return cb(err)
+        cb(null, user)
+    })
 }
 
 const User= mongoose.model('User', userSchema)
